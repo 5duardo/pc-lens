@@ -76,8 +76,28 @@
       width: 45%;
       height: 100%;
       border-radius: 99px;
-      background: linear-gradient(90deg, #12161e, #3fb950, #4f8cff, #12161e);
+      background: #3fb950;
       animation: slide 1.3s cubic-bezier(.4,0,.2,1) infinite;
+    }
+
+    .progress-bar {
+      margin-top: 28px;
+      width: 220px;
+      height: 6px;
+      background: #1a212c;
+      border: 1px solid #2a3040;
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar i {
+      position: absolute;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: #3fb950;
+      transition: width 0.2s ease-out;
+      border-radius: 99px;
     }
 
     .status {
@@ -105,8 +125,11 @@
       <img src="src/assets/logo.webp" alt="PC Lens" />
     </div>
     <h1>PC <span class="accent">Lens</span></h1>
-    <p>Detectando componentes del equipo</p>
-    <div class="spinner"><i></i></div>
+    <p id="main-text">Detectando componentes del equipo</p>
+    
+    <div class="spinner" id="spinner"><i></i></div>
+    <div class="progress-bar" id="progress" style="display: none;"><i></i></div>
+    
     <div class="status" id="status">Iniciando...</div>
   </div>
 
@@ -120,9 +143,34 @@
     ];
     let i = 0;
     const el = document.getElementById('status');
+    let updateMode = false;
+
+    // Funciones para auto-update llamadas vía IPC (executeJavaScript)
+    function showUpdateFound() {
+      updateMode = true;
+      document.getElementById('main-text').textContent = '¡Actualización encontrada!';
+      document.getElementById('status').textContent = 'Preparando descarga...';
+      document.getElementById('status').style.opacity = '1';
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('progress').style.display = 'block';
+    }
+
+    function updateProgress(pct) {
+      if (!updateMode) showUpdateFound();
+      document.getElementById('status').textContent = `Descargando actualización: ${Math.round(pct)}%`;
+      document.querySelector('#progress i').style.width = `${pct}%`;
+    }
+
+    function showUpdateInstalling() {
+      document.getElementById('status').textContent = 'Instalando actualización...';
+    }
+
+    // Lógica del spinner falso original
     setInterval(() => {
+      if (updateMode) return; // Si estamos actualizando, detenemos los mensajes de carga
       el.style.opacity = '0';
       setTimeout(() => {
+        if (updateMode) return;
         el.textContent = msgs[i % msgs.length];
         el.style.opacity = '1';
         i++;

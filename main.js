@@ -17,6 +17,9 @@ try {
 let mainWindow;
 let splashWindow;
 
+let splashUpdateBlock = false;
+let appIsReady = false;
+
 // =====================================================================
 // RECOLECCIÓN DE DATOS EN TIEMPO REAL — ARQUITECTURA DE CACHE
 // =====================================================================
@@ -187,6 +190,7 @@ function createSplash() {
     transparent: false,
     resizable: false,
     alwaysOnTop: true,
+    skipTaskbar: true, // No mostrar el splash en la barra de tareas
     backgroundColor: '#000000',
     center: true,
     webPreferences: { contextIsolation: true }
@@ -226,20 +230,30 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // Failsafe: si el renderer no avisa, mostramos igualmente
-  setTimeout(() => revealMainWindow(), 8000);
+  // Failsafe: si el renderer no avisa, mostramos igualmente si no hay actualización bloqueando
+  setTimeout(() => {
+    if (!splashUpdateBlock) revealMainWindow();
+  }, 8000);
 }
 
 function revealMainWindow() {
   if (mainWindow && !mainWindow.isVisible()) {
     mainWindow.show();
+    // Forzar la ventana al primer plano en Windows (evita que se abra en segundo plano)
+    mainWindow.setAlwaysOnTop(true);
+    mainWindow.setAlwaysOnTop(false);
     mainWindow.focus();
   }
   if (splashWindow) splashWindow.close();
 }
 
 // El renderer envía esto cuando ya cargó los datos del hardware
-ipcMain.on('app-ready', () => revealMainWindow());
+ipcMain.on('app-ready', () => {
+  appIsReady = true;
+  if (!splashUpdateBlock) {
+    revealMainWindow();
+  }
+});
 
 // ---------- Auto-update (GitHub Releases) ----------
 function sendUpdateStatus(status, payload = {}) {
@@ -267,6 +281,53 @@ function setupAutoUpdater() {
   autoUpdater.on('error', (err) =>
     sendUpdateStatus('error', { message: err == null ? 'desconocido' : (err.message || String(err)) })
   );
+}
+
+function checkUpdatesForSplash() {
+  if (!autoUpdater || process.argv.includes('--dev')) {
+    if (appIsReady) revealMainWindow();
+    return;
+  }
+
+  splashUpdateBlock = true;
+
+  autoUpdater.once('update-available', () => {
+    if (splashWindow) {
+      splashWindow.webContents.executeJavaScript('showUpdateFound();').catch(()=>{});
+    }
+    // Iniciamos la descarga automáticamente como se solicitó
+    autoUpdater.downloadUpdate();
+  });
+
+  autoUpdater.once('update-not-available', () => {
+    splashUpdateBlock = false;
+    if (appIsReady) revealMainWindow();
+  });
+
+  autoUpdater.once('error', () => {
+    splashUpdateBlock = false;
+    if (appIsReady) revealMainWindow();
+  });
+
+  autoUpdater.on('download-progress', (p) => {
+    if (splashWindow) {
+      splashWindow.webContents.executeJavaScript(`updateProgress(${p.percent});`).catch(()=>{});
+    }
+  });
+
+  autoUpdater.once('update-downloaded', () => {
+    if (splashWindow) {
+      splashWindow.webContents.executeJavaScript('showUpdateInstalling();').catch(()=>{});
+    }
+    setTimeout(() => {
+      autoUpdater.quitAndInstall();
+    }, 1500);
+  });
+
+  autoUpdater.checkForUpdates().catch(() => {
+    splashUpdateBlock = false;
+    if (appIsReady) revealMainWindow();
+  });
 }
 
 ipcMain.handle('get-app-version', () => app.getVersion());
@@ -301,12 +362,8 @@ app.whenReady().then(() => {
   setupAutoUpdater();
   startAllSamplers();  // inicia recolección de TODOS los datos
 
-  // Comprobación automática al inicio (silenciosa) tras unos segundos
-  if (autoUpdater && !process.argv.includes('--dev')) {
-    setTimeout(() => {
-      autoUpdater.checkForUpdates().catch(() => {});
-    }, 6000);
-  }
+  // Buscar actualizaciones durante el splash screen
+  checkUpdatesForSplash();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -321,7 +378,7 @@ app.on('window-all-closed', () => {
 // ---------- Información estática del hardware (se consulta una vez) ----------
 ipcMain.handle('get-static-info', async () => {
   try {
-    const [cpu, mem, system, baseboard, bios, graphics, osInfo, diskLayout, blockDevices, memLayout, usb, audio, bluetoothDevices] =
+    const [cpu, mem, system, baseboard, bios, graphics, osInfo, diskLayout, blockDevices, memLayout, usb, audio, bluetoothDevices, chassis, battery] =
       await Promise.all([
         si.cpu(),
         si.mem(),
@@ -335,7 +392,9 @@ ipcMain.handle('get-static-info', async () => {
         si.memLayout(),
         si.usb(),
         si.audio(),
-        si.bluetoothDevices()
+        si.bluetoothDevices(),
+        si.chassis(),
+        si.battery()
       ]);
 
     const electronDisplays = require('electron').screen.getAllDisplays();
@@ -355,7 +414,7 @@ ipcMain.handle('get-static-info', async () => {
       cpu, mem, system, baseboard, bios, graphics, osInfo,
       diskLayout, blockDevices, memLayout,
       displays: mergedDisplays,
-      usb, audio, bluetoothDevices
+      usb, audio, bluetoothDevices, chassis, battery
     };
   } catch (err) {
     return { error: err.message };

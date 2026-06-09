@@ -24,7 +24,11 @@ import {
   Shield,
   RotateCcw,
   Activity,
-  Home
+  Home,
+  Laptop,
+  PcCase,
+  Headphones,
+  Bluetooth
 } from 'lucide-react';
 
 // Mapeo de nombres internos a componentes Lucide
@@ -53,7 +57,11 @@ const ICON_MAP = {
   shield: Shield,
   resetDns: RotateCcw,
   activity: Activity,
-  home: Home
+  home: Home,
+  laptop: Laptop,
+  desktop: PcCase,
+  headphones: Headphones,
+  bluetooth: Bluetooth
 };
 
 export function Icon({ name, className = 'w-[18px] h-[18px]', strokeWidth = 2 }) {

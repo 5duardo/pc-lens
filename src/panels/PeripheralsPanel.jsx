@@ -1,18 +1,25 @@
 import React from 'react';
-import { Card, Badge, Tag } from '../components/ui.jsx';
+import { Badge, Tag } from '../components/ui.jsx';
 import { Icon } from '../icons.jsx';
 
-function DeviceRow({ name, sub, tag, tagTone }) {
+function DeviceBox({ name, sub, tag, iconName, colorClass }) {
   return (
-    <div className="flex justify-between items-center py-[10px] border-b border-edge last:border-0">
-      <div className="flex items-center gap-[10px] min-w-0">
-        <Icon name="device" className="w-[16px] h-[16px] text-muted shrink-0" />
-        <div className="min-w-0">
-          <div className="text-[13.5px] font-semibold truncate">{name}</div>
-          {sub && <div className="text-[11.5px] text-muted truncate">{sub}</div>}
-        </div>
+    <div className="flex flex-col p-[20px] bg-card2 border border-edge rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+      {/* Glow de fondo tenue en hover */}
+      <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 ${colorClass.split(' ')[0]}`}></div>
+      
+      <div className={`w-[48px] h-[48px] rounded-xl flex items-center justify-center mb-5 ${colorClass} shadow-sm`}>
+        <Icon name={iconName} className="w-[24px] h-[24px]" strokeWidth={2.2} />
       </div>
-      {tag && <Tag tone={tagTone || 'blue'}>{tag}</Tag>}
+      
+      <div className="text-[14.5px] font-extrabold text-txt break-words leading-tight" title={name}>{name}</div>
+      <div className="text-[12.5px] text-muted break-words mt-[6px] font-medium leading-snug" title={sub}>{sub || 'Dispositivo estándar'}</div>
+      
+      {tag && (
+        <div className="mt-[18px] flex items-center">
+          <Tag tone="base">{tag}</Tag>
+        </div>
+      )}
     </div>
   );
 }
@@ -37,66 +44,90 @@ export default function PeripheralsPanel({ staticInfo }) {
   );
 
   return (
-    <div className="flex flex-col gap-[18px]">
-      <Card
-        icon="device"
-        title="Dispositivos USB"
-        badge={<Badge>{usbDevices.length}</Badge>}
-      >
+    <div className="flex flex-col gap-[32px]">
+      {/* USB Section */}
+      <section>
+        <div className="flex items-center gap-3 mb-[18px]">
+          <div className="p-2 bg-accent/10 rounded-lg text-accent">
+            <Icon name="device" className="w-[18px] h-[18px]" strokeWidth={2.5} />
+          </div>
+          <h2 className="text-[18px] font-black tracking-tight text-txt">USB</h2>
+          <Badge tone="blue">{usbDevices.length}</Badge>
+        </div>
+        
         {usbDevices.length === 0 ? (
-          <div className="text-[12.5px] text-muted">No se detectaron dispositivos USB.</div>
+          <div className="text-[13.5px] text-muted font-medium p-5 bg-card2 rounded-2xl border border-edge text-center">No se detectaron dispositivos USB.</div>
         ) : (
-          usbDevices.map((u, i) => (
-            <DeviceRow
-              key={i}
-              name={u.name}
-              sub={u.manufacturer || u.vendor || ''}
-              tag={u.type}
-              tagTone="blue"
-            />
-          ))
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[16px]">
+            {usbDevices.map((u, i) => (
+              <DeviceBox
+                key={i}
+                name={u.name}
+                sub={u.manufacturer || u.vendor || ''}
+                tag={u.type}
+                iconName="device"
+                colorClass="bg-accent text-card"
+              />
+            ))}
+          </div>
         )}
-      </Card>
+      </section>
 
-      <Card
-        icon="device"
-        title="Dispositivos de audio"
-        badge={<Badge>{audioDevices.length}</Badge>}
-      >
+      {/* Audio Section */}
+      <section>
+        <div className="flex items-center gap-3 mb-[18px]">
+          <div className="p-2 bg-gpu/10 rounded-lg text-gpu">
+            <Icon name="headphones" className="w-[18px] h-[18px]" strokeWidth={2.5} />
+          </div>
+          <h2 className="text-[18px] font-black tracking-tight text-txt">Audio</h2>
+          <Badge tone="pink">{audioDevices.length}</Badge>
+        </div>
+        
         {audioDevices.length === 0 ? (
-          <div className="text-[12.5px] text-muted">No se detectaron dispositivos de audio.</div>
+          <div className="text-[13.5px] text-muted font-medium p-5 bg-card2 rounded-2xl border border-edge text-center">No se detectaron dispositivos de audio.</div>
         ) : (
-          audioDevices.map((a, i) => (
-            <DeviceRow
-              key={i}
-              name={a.name}
-              sub={a.manufacturer || ''}
-              tag={a.type || null}
-              tagTone="pink"
-            />
-          ))
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[16px]">
+            {audioDevices.map((a, i) => (
+              <DeviceBox
+                key={i}
+                name={a.name}
+                sub={a.manufacturer || ''}
+                tag={a.type || null}
+                iconName="headphones"
+                colorClass="bg-gpu text-white"
+              />
+            ))}
+          </div>
         )}
-      </Card>
+      </section>
 
-      <Card
-        icon="device"
-        title="Dispositivos Bluetooth"
-        badge={<Badge>{btDevices.length}</Badge>}
-      >
+      {/* Bluetooth Section */}
+      <section>
+        <div className="flex items-center gap-3 mb-[18px]">
+          <div className="p-2 bg-accent2/10 rounded-lg text-accent2">
+            <Icon name="bluetooth" className="w-[18px] h-[18px]" strokeWidth={2.5} />
+          </div>
+          <h2 className="text-[18px] font-black tracking-tight text-txt">Bluetooth</h2>
+          <Badge tone="blue">{btDevices.length}</Badge>
+        </div>
+        
         {btDevices.length === 0 ? (
-          <div className="text-[12.5px] text-muted">No se detectaron dispositivos Bluetooth.</div>
+          <div className="text-[13.5px] text-muted font-medium p-5 bg-card2 rounded-2xl border border-edge text-center">No se detectaron dispositivos Bluetooth.</div>
         ) : (
-          btDevices.map((b, i) => (
-            <DeviceRow
-              key={i}
-              name={b.name}
-              sub={b.manufacturer || ''}
-              tag={b.type || null}
-              tagTone="base"
-            />
-          ))
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[16px]">
+            {btDevices.map((b, i) => (
+              <DeviceBox
+                key={i}
+                name={b.name}
+                sub={b.manufacturer || ''}
+                tag={b.type || null}
+                iconName="bluetooth"
+                colorClass="bg-accent2 text-white"
+              />
+            ))}
+          </div>
         )}
-      </Card>
+      </section>
     </div>
   );
 }

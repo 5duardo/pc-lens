@@ -60,6 +60,10 @@ export default function App() {
   const sys = staticInfo?.system || {};
   const machineName = `${sys.manufacturer || ''} ${sys.model || ''}`.trim() || 'Equipo desconocido';
   const hasError = data?.error;
+  
+  const chassisType = staticInfo?.chassis?.type?.toLowerCase() || '';
+  const isLaptop = chassisType.includes('laptop') || chassisType.includes('notebook') || chassisType.includes('portable') || staticInfo?.battery?.hasBattery;
+  const deviceTypeStr = isLaptop ? '(Laptop)' : '(Escritorio)';
 
   const panelProps = { staticInfo, data, history };
 
@@ -70,13 +74,14 @@ export default function App() {
         <div className="flex items-center gap-[14px]">
           <div className="relative">
             <img src={logoUrl} alt="PC Lens" className="w-[42px] h-[42px] object-contain drop-shadow-md" />
-            <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full -z-10"></div>
           </div>
           <div>
             <h1 className="text-[20px] font-extrabold tracking-tight flex items-center gap-1">
-              PC <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent2">Lens</span>
+              PC <span className="text-accent">Lens</span>
             </h1>
-            <p className="text-[12px] text-muted mt-[1px] font-medium">{machineName}</p>
+            <p className="text-[12px] text-muted mt-[1px] font-medium">
+              {machineName} <span className="opacity-75">{deviceTypeStr}</span>
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
