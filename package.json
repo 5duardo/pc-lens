@@ -1,6 +1,6 @@
 {
   "name": "pc-lens",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "PC Lens - Visualizador de componentes de PC en tiempo real (React + Vite + Tailwind + Recharts)",
   "main": "main.js",
   "scripts": {
