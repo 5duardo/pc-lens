@@ -1,0 +1,63 @@
+{
+  "name": "pc-lens",
+  "version": "2.0.0",
+  "description": "PC Lens - Visualizador de componentes de PC en tiempo real (React + Vite + Tailwind + Recharts)",
+  "main": "main.js",
+  "scripts": {
+    "dev": "concurrently -k \"vite\" \"wait-on tcp:5173 && electron . --dev\"",
+    "build": "vite build",
+    "preview": "vite build && electron .",
+    "dist": "vite build && electron-builder",
+    "publish": "vite build && electron-builder --publish always"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "lucide-react": "^1.17.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7",
+    "systeminformation": "^5.22.11"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^10.0.3",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "vite": "^5.4.2",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.pclens.app",
+    "productName": "PC Lens",
+    "files": [
+      "main.js",
+      "preload.js",
+      "splash.html",
+      "dist/**/*",
+      "src/assets/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/logo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "5duardo",
+        "repo": "pc-lens"
+      }
+    ]
+  }
+}

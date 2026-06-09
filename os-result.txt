@@ -1,0 +1,4 @@
+user=3406 sys=3439 idle=11343 irq=234 total=18422
+os.cpus busy% = 38.4%
+user-only% = 18.5%
+powershell PercentProcessorTime = 98%

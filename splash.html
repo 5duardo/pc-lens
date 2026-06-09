@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>PC Lens</title>
+  <link rel="icon" type="image/webp" href="src/assets/logo.webp" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; background: #12161e; }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-app-region: drag;
+      user-select: none;
+      padding: 0;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      border-radius: 0;
+      background: #12161e;
+      border: none;
+      box-shadow: none;
+      color: #e6ebf5;
+      overflow: hidden;
+      animation: pop .5s cubic-bezier(.2,.9,.3,1.2) both;
+    }
+
+    .logo {
+      width: 72px; height: 72px;
+    }
+    .logo img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      margin-top: 18px;
+      color: #e6ebf5;
+    }
+    h1 .accent {
+      color: #3fb950;
+    }
+    p {
+      font-size: 12.5px;
+      color: #7a8599;
+      margin-top: 7px;
+      letter-spacing: .2px;
+    }
+
+    .spinner {
+      margin-top: 28px;
+      width: 220px;
+      height: 6px;
+      background: #1a212c;
+      border: 1px solid #2a3040;
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+    .spinner i {
+      position: absolute;
+      left: -45%;
+      width: 45%;
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #12161e, #3fb950, #4f8cff, #12161e);
+      animation: slide 1.3s cubic-bezier(.4,0,.2,1) infinite;
+    }
+
+    .status {
+      margin-top: 16px;
+      font-size: 11.5px;
+      color: #7a8599;
+      height: 14px;
+      letter-spacing: .2px;
+      transition: opacity .25s ease;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(.94) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes slide {
+      0%   { left: -45%; }
+      100% { left: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <img src="src/assets/logo.webp" alt="PC Lens" />
+    </div>
+    <h1>PC <span class="accent">Lens</span></h1>
+    <p>Detectando componentes del equipo</p>
+    <div class="spinner"><i></i></div>
+    <div class="status" id="status">Iniciando...</div>
+  </div>
+
+  <script>
+    const msgs = [
+      'Leyendo procesador (CPU)...',
+      'Detectando tarjetas graficas (GPU)...',
+      'Analizando memoria RAM...',
+      'Escaneando discos...',
+      'Comprobando sensores y temperaturas...'
+    ];
+    let i = 0;
+    const el = document.getElementById('status');
+    setInterval(() => {
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = msgs[i % msgs.length];
+        el.style.opacity = '1';
+        i++;
+      }, 220);
+    }, 1100);
+  </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tema oscuro (por defecto) */
+:root {
+  --c-bg: 0 0 0;
+  --c-card: 10 10 10;
+  --c-card2: 18 18 18;
+  --c-edge: 38 38 38;
+  --c-txt: 235 235 235;
+  --c-muted: 150 150 150;
+  --c-accent: 63 185 80;
+  --c-accent2: 79 140 255;
+  --c-gpu: 219 97 162;
+  --c-warn: 210 153 34;
+  --c-danger: 248 81 73;
+  --c-freq: 163 113 247;
+  --c-track: 15 15 15;
+}
+
+/* Tema claro */
+html.light {
+  --c-bg: 240 243 248;
+  --c-card: 255 255 255;
+  --c-card2: 237 241 246;
+  --c-edge: 209 216 226;
+  --c-txt: 26 31 41;
+  --c-muted: 90 102 120;
+  --c-accent: 34 154 60;
+  --c-accent2: 47 111 224;
+  --c-gpu: 194 65 138;
+  --c-warn: 176 122 8;
+  --c-danger: 220 49 49;
+  --c-freq: 124 77 230;
+  --c-track: 226 231 239;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-txt));
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Scrollbar discreta para las pestañas y listas */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-edge));
+  border-radius: 6px;
+}
+
+/* ── Tabs de navegación ── */
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgb(var(--c-muted));
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.nav-tab:hover {
+  color: rgb(var(--c-txt));
+  background: rgb(var(--c-card2));
+}
+.nav-tab-active {
+  color: rgb(var(--c-accent));
+  background: rgb(var(--c-accent) / 0.1);
+  border-color: rgb(var(--c-accent) / 0.25);
+  box-shadow: 0 0 12px rgb(var(--c-accent) / 0.08);
+}
+
+/* ── Botón de Ajustes (diferenciado) ── */
+.nav-settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  color: rgb(var(--c-muted));
+  background: transparent;
+  border: 1px solid rgb(var(--c-edge));
+  transition: all 0.25s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.nav-settings:hover {
+  color: rgb(var(--c-txt));
+  background: rgb(var(--c-card2));
+  border-color: rgb(var(--c-muted) / 0.4);
+}
+.nav-settings-active {
+  color: rgb(var(--c-freq));
+  background: rgb(var(--c-freq) / 0.1);
+  border-color: rgb(var(--c-freq) / 0.3);
+  box-shadow: 0 0 14px rgb(var(--c-freq) / 0.1);
+}
+.nav-settings-active:hover {
+  background: rgb(var(--c-freq) / 0.15);
+}
+
+/* ── Prueba de velocidad ── */
+.speed-test-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, rgb(var(--c-accent2)), rgb(var(--c-freq)));
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgb(var(--c-accent2) / 0.25);
+}
+.speed-test-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgb(var(--c-accent2) / 0.35);
+}
+.speed-test-btn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.speed-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── DNS ── */
+.dns-select,
+.dns-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgb(var(--c-txt));
+  background: rgb(var(--c-track));
+  border: 1px solid rgb(var(--c-edge));
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.dns-select:focus,
+.dns-input:focus {
+  border-color: rgb(var(--c-accent2));
+  box-shadow: 0 0 0 3px rgb(var(--c-accent2) / 0.12);
+}
+.dns-select option {
+  background: rgb(var(--c-card));
+  color: rgb(var(--c-txt));
+}
+
+.dns-preset-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(var(--c-muted));
+  background: rgb(var(--c-track));
+  border: 1px solid rgb(var(--c-edge));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.dns-preset-btn:hover {
+  color: rgb(var(--c-txt));
+  background: rgb(var(--c-card2));
+  border-color: rgb(var(--c-muted) / 0.4);
+}
+.dns-preset-active {
+  color: rgb(var(--c-accent2));
+  background: rgb(var(--c-accent2) / 0.1);
+  border-color: rgb(var(--c-accent2) / 0.3);
+}
+
+.dns-apply-btn,
+.dns-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.dns-apply-btn {
+  color: #fff;
+  background: rgb(var(--c-accent2));
+  box-shadow: 0 2px 8px rgb(var(--c-accent2) / 0.2);
+}
+.dns-apply-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgb(var(--c-accent2) / 0.3);
+}
+.dns-apply-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.dns-reset-btn {
+  color: rgb(var(--c-muted));
+  background: transparent;
+  border-color: rgb(var(--c-edge));
+}
+.dns-reset-btn:hover {
+  color: rgb(var(--c-txt));
+  background: rgb(var(--c-card2));
+}
